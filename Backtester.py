@@ -33,10 +33,10 @@ data_clean = data_raw[['Open', 'High', 'Low', 'Close']]
 data_clean['Date_col'] = data_clean.index
 pd.to_datetime(data_clean['Date_col'])
 
-tend_ma = data_clean['Open'].rolling(window=10, min_periods=1).mean()
+twohundo_ma = data_clean['Open'].rolling(window=200, min_periods=1).mean()
 fiftyd_ma = data_clean['Open'].rolling(window=50,min_periods=1).mean()
 
-data_clean['10 Day MA'] = tend_ma
+data_clean['200 Day MA'] = twohundo_ma
 data_clean['Fifty Day MA'] = fiftyd_ma
 
 #------------------------------
@@ -55,7 +55,7 @@ data_clean = data_clean.sort_index().asfreq('D', method='pad')
 #----------------------
 #----------------------
 
-data_bought = data_clean[data_clean['10 Day MA'] > data_clean['Fifty Day MA']]
+data_bought = data_clean[data_clean['Fifty Day MA'] > data_clean['200 Day MA']]
 
 date_list = data_bought.index[:]
 
@@ -88,12 +88,13 @@ end_stats.index = ending_frame['Date']
 
 
 print('Ending performance mean')
-print(f'10 Vs 50 Day MA Avg/Trade: {end_stats.mean()}')
+print(f'50 Vs 200 Day MA Avg/Trade: {end_stats.mean()}')
 
 print('---------------')
 print('Average number of trades/year') # this tuple will return the total amount of trades for the whole term,
-print('10 v 50:')                       # must then be divided by number of years
-print(end_stats.shape)
+print('50 v 200:')                     # must then be divided by number of years
+tradesyear = end_stats.shape[0]
+print(tradesyear)
 
 
 
@@ -120,13 +121,13 @@ fig_1 = plt.figure(1)     # plotting a scatter plot of each MA trade's performan
 plt.scatter(end_stats.index,end_stats['Performance'], alpha=0.7)
 plt.xlabel('Date')
 plt.ylabel('Performance')
-plt.title('10 Versus 50 Day MA Perf/Trade')
+plt.title('50 Versus 200 Day MA Perf/Trade')
 
 valueofdollar_ma = plt.figure(2)        # value of one dollar following the moving average trading criteria
 plt.plot(end_stats.index, dollarMA_list)
 plt.xlabel('Date')
 plt.ylabel('Dollar value')
-plt.title('Value of $1, using 10/50 day MA method')
+plt.title('Value of $1, using 50/200 day MA method')
 
 dollar_vals_comp = plt.figure(3)        # value of one dollar moving average criteria vs buy and hold
 ax = plt.subplot(111)
